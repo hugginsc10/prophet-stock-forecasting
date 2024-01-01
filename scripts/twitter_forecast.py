@@ -27,3 +27,14 @@ future_prices = m.make_future_dataframe(periods=365, freq='D')
 forecast = m.predict(future_prices)
 
 forecast[['ds', 'yhat', 'yhat_lower', 'yhat_upper']].tail()
+
+# 1 Year Forecast and creating subplots
+fig = m.plot(forecast)
+a = add_changepoints_to_plot(fig.gca(), m, forecast)
+plt.title("Daily Prediction \n 1 Year Forecast")
+plt.show()
+
+# Line Chart w/ the 3 subplots
+fig = m.plot_components(forecast)
+ax = fig.gca()
+plt.show()
