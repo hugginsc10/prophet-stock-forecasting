@@ -4,9 +4,6 @@ import matplotlib.pyplot as plt
 from plotly.subplots import make_subplots
 import plotly.graph_objects as go
 import datetime as dt
-from prophet import Prophet
-from prophet.plot import add_changepoints_to_plot
-from sklearn.metrics import mean_absolute_error
 
 
 # load twitter ohlc data
