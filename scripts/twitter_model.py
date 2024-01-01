@@ -8,6 +8,7 @@ from prophet import Prophet
 from prophet.plot import add_changepoints_to_plot
 from sklearn.metrics import mean_absolute_error
 
+
 # load twitter ohlc data
 df = pd.read_csv('../data/TWITTER.csv')
 df.describe()
@@ -38,3 +39,46 @@ layout = {
 fig = go.Figure(data=[go.Pie(labels=df_pie.index, values = df_pie.values, textinfo='label')], layout=layout)
 fig.update_layout(height=800, width=600)
 fig.show()
+
+# OHLC Chart w/ notes
+data = go.Ohlc(x=df['Date'],
+                open=df['Open'],
+                high=df['High'],
+                low=df['Low'],
+                close=df['Close'],
+                increasing=dict(line=dict(color= '#58FA58')),
+                decreasing=dict(line=dict(color= '#FA5858')))
+
+layout = {
+    'title': 'Twitter Stocks',
+    'xaxis': {'title': 'Date',
+             'rangeslider': {'visible': False}},
+    'yaxis': {'title': 'Stock Price (USD$)'},
+    'shapes': [{
+        'x0': '2015-10-05', 'x1': '2015-10-05',
+        'y0': 0, 'y1': 1, 'xref': 'x', 'yref': 'paper',
+        'line': {'color': 'rgb(30,30,30)', 'width': 1}
+        },
+        {
+        'x0': '2020-03-15', 'x1': '2020-03-15',
+        'y0': 0, 'y1': 1, 'xref': 'x', 'yref': 'paper',
+        'line': {'color': 'rgb(30,30,30)', 'width': 1}
+    }
+    ],
+    'annotations': [{
+        'x': '2015-10-05', 'y': 0.6, 'xref': 'x', 'yref': 'paper',
+        'showarrow': False, 'xanchor': 'left',
+        'text': 'Jack Dorsey becomes CEO of Twitter.'
+        },
+        {
+        'x': '2020-03-15', 'y': 0.05, 'xref': 'x', 'yref': 'paper',
+        'showarrow': False, 'xanchor': 'left',
+        'text': 'Lockdown started in USA due to Covid19.'
+    }
+    ]
+}
+
+fig = go.Figure(data=[data], layout=layout)
+fig.update(layout_xaxis_rangeslider_visible=True)
+fig.show()
+
