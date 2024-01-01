@@ -82,3 +82,63 @@ fig = go.Figure(data=[data], layout=layout)
 fig.update(layout_xaxis_rangeslider_visible=True)
 fig.show()
 
+# Candlestick Chart
+after_covid = df.loc[df['Date'] > '2020-03-15']
+max_value = after_covid.iloc[:,1:-2].max().max()
+
+g = after_covid.groupby(["Date"])
+monthly_averages = g.aggregate({"Open": np.mean, "High": np.mean, "Low": np.mean, "Close":np.mean})
+monthly_averages.reset_index(level=0, inplace=True)
+
+trace = go.Candlestick(x=monthly_averages['Date'],
+                       open=monthly_averages['Open'].values.tolist(),
+                       high=monthly_averages['High'].values.tolist(),
+                       low=monthly_averages['Low'].values.tolist(),
+                       close=monthly_averages['Close'].values.tolist(),
+                      increasing=dict(line=dict(color= 'red')),
+                decreasing=dict(line=dict(color= 'lightgreen')))
+
+layout = {
+    'title': 'Twitter Stocks <br> <i> After Covid </i>',
+    'xaxis': {'title': 'Date',
+             'rangeslider': {'visible': False}},
+    'yaxis': {'title': 'Stock Price (USD$)'},
+    'shapes': [{
+        'x0': 0, 'x1': 1,
+        'y0': max_value, 'y1': max_value, 'xref': 'paper',
+        'line': {'color': 'rgb(30,30,30)', 'width': 1}
+        }],
+    'annotations': [{
+        'x': '2020-03-15', 'y': 0.95, 'xref': 'x', 'yref': 'paper',
+        'showarrow': False,
+        'text': 'Peak Value = %f' %max_value
+    }]
+}
+
+
+data = [trace]
+
+fig = go.Figure(data=data, layout=layout)
+fig.update(layout_xaxis_rangeslider_visible=True)
+fig.show()
+
+
+# Add 10, 50, and 200 Day moving average to Chart
+df['10D_avg'] = df.Close.rolling(window=10).mean()
+df['50D_avg'] = df.Close.rolling(window=50).mean()
+df['200D_avg'] = df.Close.rolling(window=200).mean()
+
+# Plot
+fig = make_subplots()
+
+colors = ['yellow', '#E6a1cf', '#6E6E6E']
+avgs = ['10D_avg', '50D_avg', '200D_avg']
+
+fig.append_trace({'x': df["Date"], 'y': df['Close'], 'type': 'scatter', 'name': 'Close', 'line': {'color': 'green'}}, 1, 1)
+
+for col, c in zip(avgs, colors):
+    fig.append_trace({'x': df["Date"], 'y': df[col], 'type': 'scatter', 'name': col, 'line': {'color': c}}, 1, 1)
+
+fig['layout'].update(height=800, width=1000, title='Relationship between MAs and Closing Price')
+
+fig.show()
