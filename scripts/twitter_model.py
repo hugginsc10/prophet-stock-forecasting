@@ -6,17 +6,14 @@ import plotly.graph_objects as go
 import datetime as dt
 
 
-# load twitter ohlc data
+
 df = pd.read_csv('../data/TWITTER.csv')
 df.describe()
-# data frame summary / check for missing values
+
 df.info()
 
 df["Date"] = pd.to_datetime(df["Date"])
 
-# This script creates a 3x2 grid of subplots using Plotly, each plotting a different
-# column from the DataFrame 'df' against the 'Date' column. Set to a size of
-# 1500x1000 pixels, titled "Twitter Data".
 columns = df.columns[1:]
 fig = make_subplots(rows=3, cols=2, subplot_titles=columns)
 for row in range(1, 4):
@@ -26,8 +23,7 @@ for row in range(1, 4):
 fig.update_layout(height=1500, width=1000, title_text="Twitter Data", showlegend=False)
 fig.show()
 
-# This adds a year column which is aggregated from the Date column.
-# Then creates a pie chart for the sum of volume data by year.
+
 df['Year'] = df['Date'].dt.year
 df_pie = df.groupby('Year')['Volume'].sum()
 layout = {
@@ -37,7 +33,7 @@ fig = go.Figure(data=[go.Pie(labels=df_pie.index, values = df_pie.values, textin
 fig.update_layout(height=800, width=600)
 fig.show()
 
-# OHLC Chart w/ notes
+# OHLC Chart w/ annotations
 data = go.Ohlc(x=df['Date'],
                 open=df['Open'],
                 high=df['High'],
@@ -120,12 +116,10 @@ fig.update(layout_xaxis_rangeslider_visible=True)
 fig.show()
 
 
-# Add 10, 50, and 200 Day moving average to Chart
 df['10D_avg'] = df.Close.rolling(window=10).mean()
 df['50D_avg'] = df.Close.rolling(window=50).mean()
 df['200D_avg'] = df.Close.rolling(window=200).mean()
 
-# Plot
 fig = make_subplots()
 
 colors = ['yellow', '#E6a1cf', '#6E6E6E']
