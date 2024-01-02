@@ -38,3 +38,30 @@ plt.show()
 fig = m.plot_components(forecast)
 ax = fig.gca()
 plt.show()
+
+# Monthly Data Predictions
+m = Prophet(changepoint_prior_scale=0.03).fit(df2)
+future = m.make_future_dataframe(periods=12, freq='M')
+fcst = m.predict(future)
+
+fig = m.plot(fcst)
+a = add_changepoints_to_plot(fig.gca(), m, fcst)
+plt.title("Monthly Prediction \n 1 year time frame")
+plt.show()
+
+fig = m.plot_components(fcst)
+ax = fig.gca()
+plt.show()
+
+## Evaluate Model
+y_true = df2['y'].values
+y_pred = fcst['yhat'][:-12].values
+mae = mean_absolute_error(y_true, y_pred)
+mae
+
+# Graph for Visual Analysis
+fig = go.Figure()
+fig.add_trace(go.Scatter(x=df2['ds'], y=y_true, mode='lines',name="Actual"))
+fig.add_trace(go.Scatter(x=df2['ds'], y=y_pred, mode='lines',name='Predicted'))
+fig['layout'].update(title="Line Chart for Actual and Predicted Values")
+fig.show()
